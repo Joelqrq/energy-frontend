@@ -20,10 +20,11 @@ namespace EnergyFrontend.Services
 
         public async Task<IEnumerable<EnergyRecord>> GetEnergyRecordsAsync()
         {
-            var response = await httpClient.GetAsync("/api/energyrecords");
-            var data = await response.Content.ReadAsStringAsync();
-            logger.LogInformation("Retrieved energy records: ", data);
-            return null;
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InRlc3QxIiwibmFtZWlkIjoiN2VlOGIyZmUtZDJmNC00ZTZkLWI5MjUtNTQyNjQ0ZDA3ZTRhIiwibmJmIjoxNjM2NDQxNTYwLCJleHAiOjE2MzY0NDUxNjAsImlhdCI6MTYzNjQ0MTU2MCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NTAwMS8iLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjQyMDAvIn0.BZsr1Wd39nq6z0e_n0Wa6e9l_YNVNJIJ28Xa98hjxDM");
+            var response = await httpClient.GetStringAsync("energyrecords");
+            var data = JsonSerializer.Deserialize<IEnumerable<EnergyRecord>>(response);
+            logger.LogInformation("Retrieved energy records: {0}", data);
+            return data;
         }
     }
 }
