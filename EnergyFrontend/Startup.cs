@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Headers;
-using System.Threading.Tasks;
+using EnergyFrontend.Interfaces;
 using EnergyFrontend.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -25,10 +22,24 @@ namespace EnergyFrontend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHttpClient<EnergyRecordService>(configs =>
+            services.AddDistributedMemoryCache();
+
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(360);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
+            services.AddHttpClient<IAuthService, AuthService>(configs =>
             {
                 configs.BaseAddress = new Uri(Configuration.GetValue<string>("BackendOrigin"));
-                configs.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InRlc3QxIiwibmFtZWlkIjoiN2VlOGIyZmUtZDJmNC00ZTZkLWI5MjUtNTQyNjQ0ZDA3ZTRhIiwibmJmIjoxNjM2NDQxNTYwLCJleHAiOjE2MzY0NDUxNjAsImlhdCI6MTYzNjQ0MTU2MCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NTAwMS8iLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjQyMDAvIn0.BZsr1Wd39nq6z0e_n0Wa6e9l_YNVNJIJ28Xa98hjxDM");
+                configs.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            });
+
+            services.AddHttpClient<IEnergyRecordService, EnergyRecordService>(configs =>
+            {
+                configs.BaseAddress = new Uri(Configuration.GetValue<string>("BackendOrigin"));
                 configs.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             });
 
@@ -54,6 +65,8 @@ namespace EnergyFrontend
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseSession();
 
             app.UseEndpoints(endpoints =>
             {

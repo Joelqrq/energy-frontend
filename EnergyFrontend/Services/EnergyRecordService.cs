@@ -1,29 +1,33 @@
-﻿using EnergyFrontend.Models;
+﻿using EnergyFrontend.Interfaces;
+using EnergyFrontend.Models;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Text.Json;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace EnergyFrontend.Services
 {
-    public class EnergyRecordService
+    public class EnergyRecordService: IEnergyRecordService
     {
         private readonly HttpClient httpClient;
         private readonly ILogger logger;
+        private readonly IAuthService authService;
 
-        public EnergyRecordService(HttpClient httpClient, ILogger<IEnumerable<EnergyRecord>> logger)
+        public EnergyRecordService(HttpClient httpClient, ILogger<IEnumerable<EnergyRecord>> logger, IAuthService authService)
         {
             this.httpClient = httpClient;
             this.logger = logger;
+            this.authService = authService;
+            this.logger.LogInformation("Auth Service in Energy {0}", this.authService);
         }
 
-        public async Task<IEnumerable<EnergyRecord>> GetEnergyRecordsAsync()
+        public async Task<IEnumerable<EnergyRecord>> GetEnergyRecordsAsync(string token)
         {
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InRlc3QxIiwibmFtZWlkIjoiN2VlOGIyZmUtZDJmNC00ZTZkLWI5MjUtNTQyNjQ0ZDA3ZTRhIiwibmJmIjoxNjM2NDQxNTYwLCJleHAiOjE2MzY0NDUxNjAsImlhdCI6MTYzNjQ0MTU2MCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NTAwMS8iLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjQyMDAvIn0.BZsr1Wd39nq6z0e_n0Wa6e9l_YNVNJIJ28Xa98hjxDM");
-            var response = await httpClient.GetStringAsync("energyrecords");
-            var data = JsonSerializer.Deserialize<IEnumerable<EnergyRecord>>(response);
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            var data = await httpClient.GetFromJsonAsync<IEnumerable<EnergyRecord>>("energyrecords");
             logger.LogInformation("Retrieved energy records: {0}", data);
+
             return data;
         }
     }
