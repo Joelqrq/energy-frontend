@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using EnergyFrontend.Models;
 using Microsoft.Extensions.Configuration;
+using EnergyFrontend.Services;
 
 namespace EnergyFrontend.Controllers
 {
@@ -14,16 +15,20 @@ namespace EnergyFrontend.Controllers
     {
         private readonly ILogger<HomeController> logger;
         private readonly IConfiguration configuration;
+        private readonly EnergyRecordService energyRecordService;
 
-        public HomeController(ILogger<HomeController> logger, IConfiguration configuration)
+        public HomeController(ILogger<HomeController> logger, IConfiguration configuration, EnergyRecordService energyRecordService)
         {
             this.logger = logger;
             this.configuration = configuration;
+            this.energyRecordService = energyRecordService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             logger.LogInformation(configuration.GetValue<string>("BackendOrigin"));
+            // Fetch data from backend
+            await energyRecordService.GetEnergyRecordsAsync();
             return View();
         }
 
