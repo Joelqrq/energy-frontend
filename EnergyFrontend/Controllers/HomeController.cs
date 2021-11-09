@@ -37,8 +37,10 @@ namespace EnergyFrontend.Controllers
             return View(energyRecords);
         }
 
-        public IActionResult Privacy()
+        public async Task<IActionResult> Privacy()
         {
+            var token = HttpContext.Session.GetString("token");
+            var energyRecords = await energyRecordService.GetEnergyRecordsAsync(token);
             return View();
         }
 

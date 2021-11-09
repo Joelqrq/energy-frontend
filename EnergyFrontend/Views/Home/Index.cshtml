@@ -1,8 +1,88 @@
-﻿@{
+﻿@model IEnumerable<EnergyRecord>
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container">
+    @for (int i = 0; i < Model.Count(); i += 3)
+    {
+        <div class="row">
+            @foreach (var record in Model.Skip(1).Take(3))
+            {
+                <div class="col">
+                    <div class="card">
+                        <img src=@record.Image class="card-img-top" alt="image">
+                        <div class="card-body">
+                            <h5 class="card-title">@record.Region @record.Year</h5>
+                            <dl class="row">
+                                <dt class="col-sm-6">Price: </dt>
+                                <dd class="col-sm-6">@record.Price</dd>
+                                <dt class="col-sm-6">Year: </dt>
+                                <dd class="col-sm-6">@record.Year</dd>
+                                <dt class="col-sm-6">Region: </dt>
+                                <dd class="col-sm-6">@record.Region</dd>
+                                <dt class="col-sm-6">Wind2: </dt>
+                                <dd class="col-sm-6">@record.Wind2</dd>
+                                <dt class="col-sm-6">WaveAndTidal: </dt>
+                                <dd class="col-sm-6">@record.WaveAndTidal</dd>
+                                <dt class="col-sm-6">SolarPv: </dt>
+                                <dd class="col-sm-6">@record.SolarPv</dd>
+                                <dt class="col-sm-6">Hydro: </dt>
+                                <dd class="col-sm-6">@record.Hydro</dd>
+                                <dt class="col-sm-6">LandfillGas: </dt>
+                                <dd class="col-sm-6">@record.LandfillGas</dd>
+                                <dt class="col-sm-6">OtherBioEnergy: </dt>
+                                <dd class="col-sm-6">@record.OtherBioEnergy</dd>
+                                <dt class="col-sm-6">Total: </dt>
+                                <dd class="col-sm-6">@record.Total</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<div class="text-left">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Image</th>
+                <th scope="col">Price</th>
+                <th scope="col">Year</th>
+                <th scope="col">Region</th>
+                <th scope="col">Wind2</th>
+                <th scope="col">WaveAndTidal</th>
+                <th scope="col">SolarPv</th>
+                <th scope="col">Hydro</th>
+                <th scope="col">LandfillGas</th>
+                <th scope="col">OtherBioEnergy</th>
+                <th scope="col">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (EnergyRecord record in Model)
+            {
+                <tr>
+                    <td>@record.Id</td>
+                    <td>
+                        <img src=@record.Image class="img-fluid">
+                    </td>
+                    <td>@record.Price</td>
+                    <td>@record.Year</td>
+                    <td>@record.Region</td>
+                    <td>@record.Wind2</td>
+                    <td>@record.WaveAndTidal</td>
+                    <td>@record.SolarPv</td>
+                    <td>@record.Hydro</td>
+                    <td>@record.LandfillGas</td>
+                    <td>@record.OtherBioEnergy</td>
+                    <td>@record.Total</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
